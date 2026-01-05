@@ -32,7 +32,6 @@ public class OpenMeteoWeatherService implements WeatherService {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.print("RESPONSE" + response);
             return parse(response.body());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error fetching weather", e);
