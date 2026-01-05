@@ -3,6 +3,8 @@ package weather.openmeteo;
 import weather.api.WeatherReport;
 import weather.api.WeatherService;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,33 +12,37 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class OpenMeteoWeatherService implements WeatherService {
+
+    private final HttpClient client = HttpClient.newHttpClient();
+
     @Override
     public WeatherReport getCurrentWeather(double latitude, double longitude) {
+        String url = String.format(
+                "https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current_weather=true",
+                latitude, longitude
+        );
 
-        String BASE_URL = "https://api.open-meteo.com/v1/forecast"
-                    + "?longitude=" + longitude
-                    + "latitude=" + latitude
-                    + "&currentweather=true";
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL)).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.print("RESPONSE" + response);
             return parse(response.body());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error fetching weather", e);
         }
     }
 
-    private WeatherReport parse(String json) { //copied
-        double temperature = extract(json, "\"temperature\":");
-        double windSpeed = extract(json, "\"windspeed\":");
+    private WeatherReport parse(String json) {
+        JSONObject obj = new JSONObject(json);
+        JSONObject current = obj.getJSONObject("current_weather");
+
+        double temperature = current.getDouble("temperature");
+        double windSpeed = current.getDouble("windspeed");
+
         return new WeatherReport(temperature, windSpeed);
     }
-
-    private double extract(String json, String key) { //copied
-        int start = json.indexOf(key) + key.length();
-        int end = json.indexOf(",", start);
-        return Double.parseDouble(json.substring(start, end));
-    }
-
 }

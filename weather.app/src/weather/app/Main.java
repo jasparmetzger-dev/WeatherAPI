@@ -41,7 +41,7 @@ public class Main {
         System.out.println("Type 'done' when finished:");
 
         while (true) {
-            System.out.print(">");
+            System.out.print("> ");
             String line = scanner.nextLine().trim();
 
             if (line.equalsIgnoreCase("done")) break;
@@ -63,7 +63,5 @@ public class Main {
         }
 
         return coordinates;
-
-
     }
 }
