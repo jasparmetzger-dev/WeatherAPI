@@ -54,8 +54,8 @@ public class Main {
                 continue;
             }
             try {
-                double lat = Double.parseDouble(parts[0]);
-                double lon = Double.parseDouble(parts[1]);
+                double lat = Double.parseDouble(parts[0].replace(',', '.'));
+                double lon = Double.parseDouble(parts[1].replace(',', '.'));
                 coordinates.add(new double[]{lat, lon});
             } catch (NumberFormatException e) {
                 System.out.println("Invalid coordinates. Try again.");

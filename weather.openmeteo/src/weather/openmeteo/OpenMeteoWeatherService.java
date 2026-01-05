@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Locale;
 
 public class OpenMeteoWeatherService implements WeatherService {
 
@@ -18,9 +19,11 @@ public class OpenMeteoWeatherService implements WeatherService {
     @Override
     public WeatherReport getCurrentWeather(double latitude, double longitude) {
         String url = String.format(
+                Locale.US,
                 "https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current_weather=true",
                 latitude, longitude
         );
+        url = url.replace(',', '.');
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
